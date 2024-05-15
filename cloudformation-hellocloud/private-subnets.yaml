@@ -1,0 +1,95 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Private Subnets in ap-southeast-1"
+Resources:
+  customVPC:  #logical ID
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: '172.31.0.0/16'
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags: 
+        - Key: 'Name'
+          Value: 'custom-vpc'
+        - Key: 'Region'
+          Value: 'Singapore'
+        - Key: 'Environment'
+          Value: 'Non production'
+  publicSubnet1: # logical Id
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: 'ap-southeast-1a'
+      CidrBlock: '172.31.48.0/20'
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: 'Name'
+          Value: 'default-public-subnet1'
+        - Key: 'Region'
+          Value: 'Singapore'
+        - Key: 'Environment'
+          Value: 'Non production'
+      VpcId: !Ref customVPC
+  routeTableforPublicSubnet1:  #routeTable for public subnet1
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags: 
+        - Key: "Name"
+          Value: "publicSubnet1's RoutTable"
+      VpcId: !Ref customVPC
+  publicSubnet1RTAssociation:  # RT association for public subnet 1
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTableforPrivateSubnet1
+      SubnetId: !Ref publicSubnet1
+  privateSubnet2: # logical Id
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: 'ap-southeast-1b'
+      CidrBlock: '172.31.64.0/20'
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: 'Name'
+          Value: 'default-private-subnet2'
+        - Key: 'Region'
+          Value: 'Singapore'
+        - Key: 'Environment'
+          Value: 'Non production'
+      VpcId: !Ref customVPC
+  routeTableforPrivateSubnet2:  # route table for private subnet 2
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags: 
+        - Key: "Name"
+          Value: "privateSubnet2's RoutTable"
+      VpcId: !Ref customVPC
+  privateSubnet2RTAssociation:  # RT association for private subnet 2
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTableforPrivateSubnet2
+      SubnetId: !Ref privateSubnet2
+  privateSubnet3: # logical Id
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: 'ap-southeast-1c'
+      CidrBlock: '172.31.80.0/20'
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: 'Name'
+          Value: 'default-private-subnet3'
+        - Key: 'Region'
+          Value: 'Singapore'
+        - Key: 'Environment'
+          Value: 'Non production'
+      VpcId: !Ref customVPC
+  routeTableforPrivateSubnet3:  # route table for private subnet 3
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags: 
+        - Key: "Name"
+          Value: "privateSubnet3's RoutTable"
+      VpcId: !Ref customVPC
+  privateSubnet3RTAssociation:  # RT association for private subnet 3
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTableforPrivateSubnet3
+      SubnetId: !Ref privateSubnet3

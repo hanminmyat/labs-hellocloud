@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  publicInstance1:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: "t2.micro"
+      AvailabilityZone: "ap-southeast-1a"
+      ImageId: "ami-0be48b687295f8bd6"
+      KeyName: "aws-lab-mrh"
+      Tags:
+        - Key: "Region"
+          Value: "Singapore"
+        - Key: "Name"
+          Value: "publicInstance1"
