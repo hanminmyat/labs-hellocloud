@@ -1,0 +1,248 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Custom VPC and NAT in southeast-1"
+Resources:
+  customVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: "192.168.0.0/16"
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: "Name"
+          Value: "custom-vpc"
+        - Key: "Region"
+          Value: "Singapore"
+        - Key: "Environment"
+          Value: "Non-Prod"
+
+  # customRouteTable:
+  #   Type: AWS::EC2::RouteTable
+  #   Properties:
+  #     Tags:
+  #       -
+  #     VpcId: !Ref customVPC
+
+  publicSubnet1: # logical Id
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "ap-southeast-1a"
+      CidrBlock: "192.168.1.0/24"
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: "Name"
+          Value: "public-subnet1"
+        - Key: "Region"
+          Value: "Singapore"
+        - Key: "Environment"
+          Value: "Non-Prod"
+      VpcId: !Ref customVPC
+
+  publicSubnet1RTAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref publicSubnetRouteTable
+      SubnetId: !Ref publicSubnet1
+      # DependsOn: publicSubnetRouteTable
+
+  publicSubnet2: # logical Id
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "ap-southeast-1b"
+      CidrBlock: "192.168.2.0/24"
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: "Name"
+          Value: "public-subnet2"
+        - Key: "Region"
+          Value: "Singapore"
+        - Key: "Environment"
+          Value: "Non-Prod"
+      VpcId: !Ref customVPC
+
+  publicSubnet2RTAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref publicSubnetRouteTable
+      SubnetId: !Ref publicSubnet2
+      # DependsOn: publicSubnetRouteTable
+
+  publicSubnet3RTAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref publicSubnetRouteTable
+      SubnetId: !Ref publicSubnet3
+      # DependsOn: publicSubnetRouteTable
+
+  publicSubnet3: # logical Id
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "ap-southeast-1c"
+      CidrBlock: "192.168.3.0/24"
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: "Name"
+          Value: "public-subnet3"
+        - Key: "Region"
+          Value: "Singapore"
+        - Key: "Environment"
+          Value: "Non-Prod"
+      VpcId: !Ref customVPC
+
+  publicSubnetRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: "Name"
+          Value: "public subnet RoutTable"
+      VpcId: !Ref customVPC
+
+  internetRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref customNonProdIGW
+      RouteTableId: !Ref publicSubnetRouteTable
+
+  privateSubnet1: # logical Id
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "ap-southeast-1a"
+      CidrBlock: "192.168.4.0/24"
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: "Name"
+          Value: "private-subnet1"
+        - Key: "Region"
+          Value: "Singapore"
+        - Key: "Environment"
+          Value: "Non-Prod"
+      VpcId: !Ref customVPC
+
+  routeTableforPrivateSubnet1: # route table for private subnet 2
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: "Name"
+          Value: "privateSubnet1's RoutTable"
+      VpcId: !Ref customVPC
+
+  privateSubnet1RTAssociation: # RT association for private subnet 2
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTableforPrivateSubnet1
+      SubnetId: !Ref privateSubnet1
+
+  privateSubnet2: # logical Id
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "ap-southeast-1b"
+      CidrBlock: "192.168.5.0/24"
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: "Name"
+          Value: "private-subnet2"
+        - Key: "Region"
+          Value: "Singapore"
+        - Key: "Environment"
+          Value: "Non-Prod"
+      VpcId: !Ref customVPC
+
+  routeTableforPrivateSubnet2: # route table for private subnet 2
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: "Name"
+          Value: "privateSubnet2's RoutTable"
+      VpcId: !Ref customVPC
+
+  privateSubnet2RTAssociation: # RT association for private subnet 2
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTableforPrivateSubnet2
+      SubnetId: !Ref privateSubnet2
+
+  privateSubnet3: # logical Id
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "ap-southeast-1c"
+      CidrBlock: "192.168.6.0/24"
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: "Name"
+          Value: "private-subnet3"
+        - Key: "Region"
+          Value: "Singapore"
+        - Key: "Environment"
+          Value: "Non-Prod"
+      VpcId: !Ref customVPC
+
+  routeTableforPrivateSubnet3: # route table for private subnet 2
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: "Name"
+          Value: "privateSubnet3's RoutTable"
+      VpcId: !Ref customVPC
+
+  privateSubnet3RTAssociation: # RT association for private subnet 2
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTableforPrivateSubnet3
+      SubnetId: !Ref privateSubnet3
+
+  customNonProdIGW:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: "Name"
+          Value: "custom-nonprod-internet-gateway"
+        - Key: "Region"
+          Value: "Singapore"
+        - Key: "Environment"
+          Value: "Non production"
+
+  attachVPCandIGW:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref customNonProdIGW
+      VpcId: !Ref customVPC
+
+  natGatewayEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: "vpc"
+      Tags:
+        - Key: "Name"
+          Value: "NAT Gateway EIP1"
+
+  natGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt natGatewayEIP.AllocationId
+      ConnectivityType: "public"
+      SubnetId: !Ref publicSubnet1
+      Tags:
+        - Key: "Name"
+          Value: "public-natgateway1"
+
+  natGateWayRouteForPrivateSubnet1:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref natGateway
+      RouteTableId: !Ref routeTableforPrivateSubnet1
+
+  natGateWayRouteForPrivateSubnet2:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref natGateway
+      RouteTableId: !Ref routeTableforPrivateSubnet2
+
+  natGateWayRouteForPrivateSubnet3:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref natGateway
+      RouteTableId: !Ref routeTableforPrivateSubnet3
